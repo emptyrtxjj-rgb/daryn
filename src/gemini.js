@@ -8,9 +8,9 @@ const {
   SUMMARY_SYSTEM_PROMPT,
 } = require('./prompts');
 
-const PRIMARY_MODEL = (process.env.GEMINI_MODEL || 'gemini-3.7-flash').trim();
+const PRIMARY_MODEL = (process.env.GEMINI_MODEL || 'gemini-3-flash-preview').trim();
 const FALLBACK_MODELS = String(
-  process.env.GEMINI_FALLBACK_MODELS || 'gemini-3.1-flash-lite'
+  process.env.GEMINI_FALLBACK_MODELS || 'gemini-3.7-flash,gemini-3.1-flash-lite'
 )
   .split(',')
   .map((model) => model.trim())

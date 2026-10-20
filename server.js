@@ -21,7 +21,15 @@ const MAX_BYTES = MAX_FILE_MB * 1024 * 1024;
 const INLINE_PDF_LIMIT = 10 * 1024 * 1024;
 const MIN_TEXT_LENGTH = 40;
 
-if (process.env.TRUST_PROXY === '1') app.set('trust proxy', 1);
+// Render terminates TLS and adds X-Forwarded-For one hop before Express.
+// Auto-detect Render so express-rate-limit sees the real client IP without
+// requiring a manual TRUST_PROXY=1 in the dashboard.
+const behindProxy =
+  process.env.TRUST_PROXY === '1' ||
+  process.env.RENDER === 'true' ||
+  Boolean(process.env.RENDER_EXTERNAL_HOSTNAME);
+
+if (behindProxy) app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
 app.use((req, res, next) => {
