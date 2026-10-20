@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Квиз — Дарын</title>
+  <meta name="description" content="Интерактивный квиз с объяснениями и проверкой открытых ответов.">
+  <meta name="theme-color" content="#58cc02">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦉</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: '#58cc02', ink: '#2f3b3a', cloud: '#f7fbf2', sky: '#1cb0f6' },
+          fontFamily: {
+            sans: ['Nunito', 'system-ui', 'sans-serif'],
+            display: ['"Baloo 2"', 'Nunito', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="quiz-page">
+  <header class="quiz-header">
+    <div class="max-w-4xl mx-auto px-3 md:px-5 py-2.5 flex items-center gap-2.5 md:gap-4">
+      <button id="exit-btn" type="button" class="icon-btn" data-i18n-aria="quiz.leave" aria-label="Выйти">✕</button>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <span id="progress-label" class="text-[11px] md:text-xs font-black uppercase tracking-wider text-gray-400">1 / 1</span>
+          <span class="score-pill" aria-live="polite">
+            <span aria-hidden="true">⭐</span>
+            <span id="score-label">0 / 0</span>
+          </span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+          <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="lang-switch" role="group" data-i18n-aria="common.langLabel" aria-label="Язык интерфейса">
+        <button type="button" class="lang-btn" data-lang="ru" aria-pressed="true">RU</button>
+        <button type="button" class="lang-btn" data-lang="kz" aria-pressed="false">KZ</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Нет данных -->
+  <div id="missing-view" class="hidden min-h-[75vh] items-center justify-center px-4">
+    <div class="upload-card text-center max-w-md w-full">
+      <div class="text-6xl mb-2" aria-hidden="true">🦉</div>
+      <h1 class="font-display text-2xl font-bold" data-i18n="quiz.noQuizTitle">Квиз не найден</h1>
+      <p class="text-sm font-semibold text-gray-500 mt-2" data-i18n="quiz.noQuizText">Похоже, страница обновилась. Загрузи тест заново — это быстро.</p>
+      <a href="/" class="btn btn-primary w-full mt-5">
+        <span data-i18n="quiz.noQuizBtn">На главную</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Квиз -->
+  <main id="quiz-view" class="max-w-3xl mx-auto px-4 py-5 md:py-10">
+    <section id="question-card" class="question-card">
+      <div class="flex flex-wrap items-center gap-2 mb-5">
+        <span id="topic-chip" class="topic-chip"></span>
+        <span id="type-chip" class="type-chip"></span>
+        <span id="demo-badge" class="topic-chip hidden" style="background:#fff8dd;color:#8a6500;">🧪 <span data-i18n="demo.badge">Демо</span></span>
+      </div>
+
+      <h1 id="question-text" class="question-text"></h1>
+
+      <!-- Multiple choice -->
+      <div id="mc-options" class="options-grid mt-6"></div>
+
+      <!-- Open answer -->
+      <div id="open-answer" class="mt-6 hidden">
+        <label for="answer-input" class="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-2" data-i18n="quiz.openLabel">Твой ответ</label>
+        <textarea
+          id="answer-input"
+          class="open-textarea"
+          data-i18n-placeholder="quiz.openPlaceholder"
+          placeholder="Напиши ответ своими словами…"
+          maxlength="4000"
+        ></textarea>
+        <p class="text-xs font-semibold text-gray-400 mt-2 flex items-start gap-1.5">
+          <span aria-hidden="true">💡</span>
+          <span data-i18n="quiz.openHint">ИИ оценит ответ по критериям и объяснит, что улучшить.</span>
+        </p>
+        <p id="open-error" class="error-banner mt-3 hidden" role="alert">
+          <span aria-hidden="true">⚠️</span><span id="open-error-text"></span>
+        </p>
+        <button id="check-btn" type="button" class="btn btn-sky w-full mt-4">
+          <span id="check-btn-text" data-i18n="quiz.check">Проверить</span>
+          <svg id="check-spinner" class="hidden spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-6.2-8.6" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <p class="text-center text-[11px] font-bold text-gray-400 mt-5">
+      <span aria-hidden="true">🦉</span> Дарын · <span data-i18n="common.brandSub">СОР • СОЧ • Контрольные</span>
+    </p>
+  </main>
+
+  <!-- Результаты -->
+  <div id="confetti-layer" class="confetti-layer hidden" aria-hidden="true"></div>
+
+  <main id="results-view" class="results-hero hidden">
+    <div class="text-center">
+      <div class="text-6xl md:text-7xl mb-1" aria-hidden="true">🦉</div>
+      <p class="text-[11px] font-black uppercase tracking-[.2em] text-brand mb-1" data-i18n="results.eyebrow">Квиз завершён</p>
+      <h1 id="results-title" class="font-display text-3xl md:text-4xl font-bold">Хорошая работа!</h1>
+      <p id="results-subtitle" class="text-sm md:text-base font-semibold text-gray-500 mt-2 max-w-md mx-auto"></p>
+    </div>
+
+    <div class="score-ring mt-6">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#58cc02"></stop>
+            <stop offset="100%" stop-color="#8ce63d"></stop>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="100" cy="100" r="88" fill="none" stroke-width="16"></circle>
+        <circle id="ring-value" class="ring-value" cx="100" cy="100" r="88" fill="none" stroke-width="16"></circle>
+      </svg>
+      <div class="score-ring-inner">
+        <div class="flex items-baseline">
+          <span id="score-big" class="font-display text-5xl font-bold leading-none">0</span>
+          <span id="score-total" class="font-display text-2xl font-bold text-gray-400 ml-1">/ 0</span>
+        </div>
+        <span id="score-caption" class="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">баллов</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2.5 mt-6">
+      <div class="stat-card">
+        <div id="stat-accuracy" class="stat-value">0%</div>
+        <div class="stat-label" data-i18n="results.accuracy">Точность</div>
+      </div>
+      <div class="stat-card">
+        <div id="stat-correct" class="stat-value">0</div>
+        <div class="stat-label" data-i18n="results.correct">Верных</div>
+      </div>
+      <div class="stat-card">
+        <div id="stat-mistakes" class="stat-value">0</div>
+        <div class="stat-label" data-i18n="results.mistakes">Ошибок</div>
+      </div>
+    </div>
+
+    <div class="ai-card mt-6">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="ai-avatar" aria-hidden="true">🦉</div>
+        <div>
+          <p class="font-display text-lg font-bold leading-tight" data-i18n="results.aiLabel">Совет от Дарына</p>
+          <p class="text-[11px] font-bold text-gray-500" data-i18n="results.aiSub">Персонально по твоим ошибкам</p>
+        </div>
+      </div>
+      <div id="ai-summary" class="relative z-10 mt-3" aria-live="polite">
+        <div class="skeleton w-11/12 mb-2"></div>
+        <div class="skeleton w-3/4"></div>
+      </div>
+      <p id="results-demo-note" class="hidden text-[11px] font-bold text-amber-700 mt-3 relative z-10" data-i18n="results.demoNote"></p>
+    </div>
+
+    <div id="mistakes-section" class="mt-7 hidden">
+      <h2 class="font-display text-xl font-bold mb-3" data-i18n="results.reviewTitle">Разбор ошибок</h2>
+      <div id="mistakes-list" class="mistakes-list"></div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-3 mt-7">
+      <button id="retry-btn" type="button" class="btn btn-secondary">
+        <span aria-hidden="true">🔄</span>
+        <span data-i18n="results.retry">Пройти ещё раз</span>
+      </button>
+      <button id="new-btn" type="button" class="btn btn-primary">
+        <span aria-hidden="true">📥</span>
+        <span data-i18n="results.new">Новый тест</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- Feedback sheet -->
+  <section id="feedback" class="feedback-sheet" role="status" aria-live="polite" aria-hidden="true">
+    <div class="feedback-scroll">
+      <div class="flex items-start gap-3">
+        <div id="feedback-icon" class="feedback-icon" aria-hidden="true">✓</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 id="feedback-title" class="feedback-title"></h2>
+            <span id="feedback-score" class="score-badge hidden"></span>
+          </div>
+          <div id="feedback-body" class="mt-1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback-footer">
+      <button id="next-btn" type="button" class="btn btn-primary w-full">
+        <span id="next-text" data-i18n="quiz.next">Дальше</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Exit modal -->
+  <div id="exit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="exit-title">
+    <div class="modal-card">
+      <div class="text-5xl mb-2" aria-hidden="true">🦉</div>
+      <h2 id="exit-title" class="font-display text-2xl font-bold" data-i18n="quiz.exitTitle">Уже уходишь?</h2>
+      <p class="text-sm font-semibold text-gray-500 mt-1.5" data-i18n="quiz.exitText">Прогресс этого квиза не сохранится.</p>
+      <div class="grid grid-cols-2 gap-2.5 mt-5">
+        <button id="stay-btn" type="button" class="btn btn-secondary btn-sm" data-i18n="quiz.stay">Остаться</button>
+        <button id="leave-btn" type="button" class="btn btn-danger btn-sm" data-i18n="quiz.leave">Выйти</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/i18n.js" defer></script>
+  <script src="/js/quiz.js" defer></script>
+</body>
+</html>

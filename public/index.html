@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Дарын — интерактивный разбор СОР и СОЧ</title>
+  <meta name="description" content="Загрузи СОР, СОЧ или контрольную — ИИ превратит её в интерактивный квиз с объяснениями, проверкой открытых ответов и персональным советом. Қазақша және орысша.">
+  <meta name="theme-color" content="#58cc02">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦉</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#58cc02',
+            ink: '#2f3b3a',
+            cloud: '#f7fbf2',
+            sky: '#1cb0f6'
+          },
+          fontFamily: {
+            sans: ['Nunito', 'system-ui', 'sans-serif'],
+            display: ['"Baloo 2"', 'Nunito', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+  <div class="relative min-h-screen">
+    <!-- Декоративный фон -->
+    <div class="blob" style="width:420px;height:420px;background:#c9f5a5;top:-140px;left:-120px;"></div>
+    <div class="blob" style="width:360px;height:360px;background:#bde9ff;top:260px;right:-140px;"></div>
+    <div class="blob" style="width:300px;height:300px;background:#ffe9a8;bottom:-120px;left:35%;"></div>
+
+    <!-- Header -->
+    <header class="site-header relative z-20">
+      <div class="max-w-6xl mx-auto px-4 flex items-center justify-between gap-4">
+        <a class="logo" href="/" aria-label="Дарын">
+          <span class="logo-mark" aria-hidden="true">🦉</span>
+          <span>
+            <span class="logo-word">Дарын</span>
+            <span class="logo-sub" data-i18n="common.brandSub">СОР • СОЧ • Контрольные</span>
+          </span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-7 text-sm font-extrabold text-gray-500">
+          <a href="#how" class="hover:text-ink transition-colors" data-i18n="nav.how">Как это работает</a>
+          <a href="#upload" class="hover:text-ink transition-colors" data-i18n="nav.start">Начать</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <div class="lang-switch" role="group" data-i18n-aria="common.langLabel" aria-label="Язык интерфейса">
+            <button type="button" class="lang-btn" data-lang="ru" aria-pressed="true">RU</button>
+            <button type="button" class="lang-btn" data-lang="kz" aria-pressed="false">KZ</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <main class="relative z-10">
+      <section class="max-w-6xl mx-auto px-4 pt-8 pb-16 md:pt-14 md:pb-24">
+        <div class="grid lg:grid-cols-[1.05fr_.95fr] gap-10 lg:gap-14 items-center">
+          <div>
+            <span class="hero-badge">
+              <span aria-hidden="true">✨</span>
+              <span data-i18n="hero.badge">Бесплатно • Для школьников Казахстана</span>
+            </span>
+
+            <h1 class="hero-title mt-5">
+              <span data-i18n="hero.title1">Преврати тест</span><br>
+              <span class="highlight" data-i18n="hero.accent">в игру</span>
+            </h1>
+
+            <p class="mt-5 text-base md:text-lg font-semibold text-gray-500 leading-relaxed max-w-lg" data-i18n="hero.subtitle">
+              Загрузи СОР, СОЧ или контрольную — ИИ разберёт задания, объяснит каждый ответ и поможет понять ошибки.
+            </p>
+
+            <div class="flex flex-wrap gap-2.5 mt-6">
+              <span class="feature-chip" data-i18n="hero.chip1">⚡ Разбор за минуту</span>
+              <span class="feature-chip" data-i18n="hero.chip2">🧠 Объяснения к ответам</span>
+              <span class="feature-chip" data-i18n="hero.chip3">🇰🇿 Русский и казахский</span>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-10">
+              <div class="feature-card">
+                <div class="feature-emoji" aria-hidden="true">⚡</div>
+                <h3 class="font-extrabold text-sm" data-i18n="features.f1t">Мгновенная проверка</h3>
+                <p class="text-xs font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="features.f1d">Ответ виден сразу: зелёный — верно, красный — разбираем ошибку.</p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-emoji" style="background:#e9f7ff;" aria-hidden="true">🧠</div>
+                <h3 class="font-extrabold text-sm" data-i18n="features.f2t">Объяснение, а не просто балл</h3>
+                <p class="text-xs font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="features.f2d">К каждому вопросу — научное объяснение и разбор типичной ошибки.</p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-emoji" style="background:#fff8dd;" aria-hidden="true">🌍</div>
+                <h3 class="font-extrabold text-sm" data-i18n="features.f3t">Два языка</h3>
+                <p class="text-xs font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="features.f3d">Интерфейс на русском и казахском. Язык заданий берётся из документа.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload -->
+          <div id="upload" class="relative">
+            <div class="float-card" style="top:-22px;right:18px;animation-delay:.6s;" aria-hidden="true">
+              <span>🔥</span><span>+10 XP</span>
+            </div>
+            <div class="float-card" style="bottom:-22px;left:-14px;animation-delay:1.4s;" aria-hidden="true">
+              <span>⭐</span><span>5 / 5</span>
+            </div>
+
+            <div class="upload-card animate-fade-up">
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <h2 class="font-display text-2xl font-bold leading-tight" data-i18n="upload.title">Загрузи свой тест</h2>
+                  <p class="text-sm font-semibold text-gray-400 mt-0.5" data-i18n="upload.subtitle">СОР, СОЧ или обычная контрольная</p>
+                </div>
+                <span class="text-3xl" aria-hidden="true">📄</span>
+              </div>
+
+              <div id="key-warning" class="warn-banner hidden mb-4">
+                <span aria-hidden="true">⚠️</span>
+                <span data-i18n="upload.keyWarn">GEMINI_API_KEY не настроен: загрузка файлов недоступна. Демо-квиз работает.</span>
+              </div>
+
+              <form id="upload-form" novalidate>
+                <label id="dropzone" class="dropzone" for="file-input">
+                  <input
+                    id="file-input"
+                    type="file"
+                    class="sr-only"
+                    accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                  >
+
+                  <div id="dropzone-empty">
+                    <div class="upload-icon" aria-hidden="true">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 16V4"></path><path d="m6 10 6-6 6 6"></path>
+                        <path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path>
+                      </svg>
+                    </div>
+                    <p class="font-extrabold text-[15px] text-ink" data-i18n="upload.dropTitle">Выбери файл или перетащи сюда</p>
+                    <p class="text-xs font-bold text-gray-400 mt-1" data-i18n="upload.dropHint">PDF или DOCX · до 15 МБ</p>
+                    <p class="text-[11px] font-bold text-gray-400 mt-2" data-i18n="upload.supported">Поддерживаются PDF, DOCX и TXT</p>
+                  </div>
+
+                  <div id="file-preview" class="hidden items-center gap-3">
+                    <div class="file-icon" aria-hidden="true">📄</div>
+                    <div class="min-w-0 flex-1">
+                      <p id="file-name" class="truncate font-extrabold text-sm text-ink"></p>
+                      <p id="file-size" class="text-xs font-bold text-gray-400 mt-0.5"></p>
+                    </div>
+                    <button id="remove-file" type="button" class="remove-file" data-i18n-aria="upload.remove" aria-label="Убрать файл">✕</button>
+                  </div>
+                </label>
+
+                <p class="trust-note mt-2.5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                  </svg>
+                  <span data-i18n="upload.privacy">Файл обрабатывается в памяти и не сохраняется на сервере</span>
+                </p>
+
+                <div id="error-banner" class="error-banner hidden mt-3" role="alert" aria-live="assertive">
+                  <span aria-hidden="true">⚠️</span>
+                  <span id="error-text"></span>
+                </div>
+
+                <button id="generate-btn" type="submit" class="btn btn-primary w-full mt-4" disabled>
+                  <span data-i18n="upload.submit">Разобрать тест</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+                  </svg>
+                </button>
+
+                <div class="flex items-center gap-3 my-3.5">
+                  <div class="h-px bg-gray-200 flex-1"></div>
+                  <span class="text-[10px] uppercase tracking-[.18em] font-black text-gray-400" data-i18n="upload.or">или</span>
+                  <div class="h-px bg-gray-200 flex-1"></div>
+                </div>
+
+                <button id="demo-btn" type="button" class="btn btn-secondary w-full btn-sm">
+                  <span aria-hidden="true">🎮</span>
+                  <span data-i18n="upload.demo">Посмотреть демо-квиз</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section id="how" class="relative border-y-2 border-[#edf1e8] bg-white/60 py-14 md:py-20">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="text-center max-w-xl mx-auto">
+            <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="how.title">Как это работает</h2>
+            <p class="text-sm md:text-base font-semibold text-gray-500 mt-2" data-i18n="how.subtitle">Три шага до понимания темы</p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-5 mt-10">
+            <div class="feature-card flex gap-4 items-start">
+              <div class="step-number" aria-hidden="true">1</div>
+              <div>
+                <h3 class="font-extrabold text-base" data-i18n="how.s1t">Загрузи тест</h3>
+                <p class="text-sm font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="how.s1d">PDF или DOCX с заданиями СОР, СОЧ или контрольной.</p>
+              </div>
+            </div>
+            <div class="feature-card flex gap-4 items-start">
+              <div class="step-number" style="background:#1cb0f6;box-shadow:0 4px 0 #0e8fce;" aria-hidden="true">2</div>
+              <div>
+                <h3 class="font-extrabold text-base" data-i18n="how.s2t">Проходи квиз</h3>
+                <p class="text-sm font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="how.s2d">Один вопрос за раз, с прогрессом и мгновенной обратной связью.</p>
+              </div>
+            </div>
+            <div class="feature-card flex gap-4 items-start">
+              <div class="step-number" style="background:#ce82ff;box-shadow:0 4px 0 #a85cd8;" aria-hidden="true">3</div>
+              <div>
+                <h3 class="font-extrabold text-base" data-i18n="how.s3t">Пойми ошибки</h3>
+                <p class="text-sm font-semibold text-gray-500 leading-relaxed mt-1" data-i18n="how.s3d">ИИ оценит открытые ответы и даст персональный совет.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="relative z-10 py-10">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <span class="logo-mark" style="width:38px;height:38px;font-size:20px;border-radius:12px;" aria-hidden="true">🦉</span>
+          <div>
+            <p class="font-display text-xl font-bold leading-none">Дарын</p>
+            <p class="text-[11px] font-bold text-gray-400 mt-1" data-i18n="footer.tagline">Учись играя — понимай, а не зубри.</p>
+          </div>
+        </div>
+        <p class="text-[11px] font-bold text-gray-400" data-i18n="footer.note">Сделано с ❤️ для школьников Казахстана</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden" role="status" aria-live="polite" aria-busy="true">
+    <div class="loading-card">
+      <div class="loading-mascot" aria-hidden="true">🦉</div>
+      <h2 class="font-display text-2xl font-bold" data-i18n="loading.title">Дарын изучает твой тест</h2>
+      <p id="loading-message" class="text-sm font-bold text-gray-500 mt-1 min-h-[20px]">Распознаём вопросы…</p>
+      <div class="mini-progress"><div id="loading-bar"></div></div>
+      <p class="text-xs font-semibold text-gray-400" data-i18n="loading.hint">Обычно это занимает 10–30 секунд. Не закрывай страницу.</p>
+    </div>
+  </div>
+
+  <script src="/js/i18n.js" defer></script>
+  <script src="/js/upload.js" defer></script>
+</body>
+</html>
